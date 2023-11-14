@@ -1,0 +1,8 @@
+{
+  "classification_prompts": {
+    "it": {
+      "prompt": "You are presented with an image of a document written in Italian. Determine its type based on the content and format. The types are SCD ('Dichiarazione di Conformità'), COA ('Certificato di Analisi'), DDT ('Documento di Trasporto'), or 'Other' for non-matching documents. Key indicators: 1. SCD: Look for 'Dichiarazione di Conformità' or synonyms, typically containing extensive product information. 2. COA: Search for 'Certificato di Analisi' or similar terms, often with detailed analysis data in a tabular format. 3. DDT: Identify 'Documento di Trasporto' or related phrases, focusing on transport details. 4. Dual SCD-COA: Pay special attention to documents that may display characteristics of both SCD and COA. This includes a 'Dichiarazione di Conformità' along with a table of tests or analysis data, merging product information with analysis details. Note: Utilize Italian synonyms for these key terms. Base your classification on the most prominent content type present. Classify documents that don't fit any category as 'Other'. Provide only the classification.",
+      "double_check": "If the document is initially classified as SCD, recheck for the presence of analysis data in tables, which indicate it's a SCD-COA."
+    }
+  }
+}
