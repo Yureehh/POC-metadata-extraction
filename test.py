@@ -12,6 +12,7 @@ load_dotenv()
 API_KEY = os.getenv("OPENAI_API_KEY")
 API_URL = "https://api.openai.com/v1/chat/completions"
 MODEL = os.getenv("MODEL", "gpt-4-vision-preview")
+MODEL2 = os.getenv("MODEL2", "gpt-4-1106-preview")
 MAX_TOKENS = int(os.getenv("MAX_TOKENS", 1024))
 TEMPERATURE = int(os.getenv("TEMPERATURE", 0))
 
@@ -36,17 +37,29 @@ def encode_image_to_base64(image_path: Path) -> str:
         print(f"Image file not found: {image_path}")
         raise e
 
-def build_payload(base64_image: str, prompt: str, addendum: str, output: str) -> Dict:
+def build_payload(base64_image: str, prompt: str, addendum: str, output: str, model: str = MODEL) -> Dict:
     """Builds the payload for the API request."""
     return {
-        "model": MODEL,
+        "model": model,
         "messages": [
             {"role": "system", "content": [{"type": "text", "text": prompt}]},
             {"role": "user", "content": [{"type": "image_url", "image_url": f"data:image/jpeg;base64,{base64_image}"}]},
             {"role": "user", "content": [{"type": "text", "text": addendum}]},
-            {"role": "system", "content": [{"type": "text", "text": output}]},
+            {"role": "user", "content": [{"type": "text", "text": output}]},
         ],
         "max_tokens": MAX_TOKENS
+    }
+
+def build_payload2(metadata: str, prompt: str, model: str = MODEL2) -> Dict:
+    """Builds the payload for the API request. No image is passed."""
+    return {
+        "model": model,
+        "messages": [
+            {"role": "system", "content": [{"type": "text", "text": prompt}]},
+            {"role": "user", "content": [{"type": "text", "text": metadata}]},
+        ],
+        "max_tokens": MAX_TOKENS,
+        "temperature": TEMPERATURE
     }
 
 def post_request_to_api(payload: Dict) -> Dict:
@@ -69,6 +82,12 @@ def process_image(image_path: Path, config: Dict, task_type: str) -> str:
     payload = build_payload(base64_image, prompt, addendum, output)
     return post_request_to_api(payload)
 
+def process_metadata(config: Dict, metadata: str, model: str = MODEL2) -> Dict:
+    """Processes the metadata and returns a dictionary."""
+    prompt = config.get("metadata", {}).get("prompt", "")
+    payload = build_payload2(metadata, prompt, model=model)
+    return post_request_to_api(payload)
+
 def main(language: str, document_path: str):
     try:
         document_path = Path(document_path)
@@ -76,9 +95,13 @@ def main(language: str, document_path: str):
         config = load_json_config(config_path)
         class_config = config["classification_prompts"][language]
         metadata_config = config["metadata_prompts"][language]
+        refinement_config = config["refinement_prompts"]
 
         classification = process_image(document_path, class_config, "classification")
+        # parsed_classification = "SCD+COA"
+
         metadata = process_image(document_path, metadata_config, classification)
+        # parsed_metadata = process_metadata(refinement_config, metadata)
 
         return classification, metadata
 
@@ -88,12 +111,18 @@ def main(language: str, document_path: str):
 
 if __name__ == "__main__":
 
-    with gr.Blocks() as demo:
-        language = gr.Dropdown(["it", "en"], label="Language")
-        document_path = gr.Image(type="filepath", label="Image")
-        classification = gr.Textbox(label="Classification")
-        metadata = gr.Textbox(label="Metadata")
-        query_btn = gr.Button("Ask")
-        query_btn.click(fn=main, inputs=[language, document_path], outputs=[classification, metadata])
+    print(main("it", r"docs/02 - Dichiarazione di Conformità Lotto L 255SC selez_page1.png"))
 
-    demo.launch(share=True)
+    # with gr.Blocks() as demo:
+    #     with gr.Row():
+    #         document_path = gr.Image(type="filepath", label="Image")
+    #         with gr.Column():
+    #             model = gr.Dropdown([MODEL], label="Model")
+    #             language = gr.Dropdown(["it", "en"], label="Language")
+    #     with gr.Row():
+    #         classification = gr.Textbox(label="Classification")
+    #         metadata = gr.Textbox(label="Metadata")
+    #     query_btn = gr.Button("Ask")
+    #     query_btn.click(fn=main, inputs=[language, document_path], outputs=[classification, metadata])
+
+    # demo.launch(share=True)
