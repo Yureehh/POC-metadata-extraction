@@ -5,6 +5,7 @@ import requests
 from pathlib import Path
 from dotenv import load_dotenv
 from typing import Dict
+import gradio as gr 
 
 # Load environment variables
 load_dotenv()
@@ -35,14 +36,15 @@ def encode_image_to_base64(image_path: Path) -> str:
         print(f"Image file not found: {image_path}")
         raise e
 
-def build_payload(base64_image: str, prompt: str, addendum: str) -> Dict:
+def build_payload(base64_image: str, prompt: str, addendum: str, output: str) -> Dict:
     """Builds the payload for the API request."""
     return {
         "model": MODEL,
         "messages": [
             {"role": "system", "content": [{"type": "text", "text": prompt}]},
             {"role": "user", "content": [{"type": "image_url", "image_url": f"data:image/jpeg;base64,{base64_image}"}]},
-            {"role": "user", "content": [{"type": "text", "text": addendum}]}
+            {"role": "user", "content": [{"type": "text", "text": addendum}]},
+            {"role": "system", "content": [{"type": "text", "text": output}]},
         ],
         "max_tokens": MAX_TOKENS
     }
@@ -63,22 +65,35 @@ def process_image(image_path: Path, config: Dict, task_type: str) -> str:
     base64_image = encode_image_to_base64(image_path)
     prompt = config.get(task_type, {}).get("prompt", "")
     addendum = config.get(task_type, {}).get("addendum", "")
-    payload = build_payload(base64_image, prompt, addendum)
+    output = config.get(task_type, {}).get("output", "")
+    payload = build_payload(base64_image, prompt, addendum, output)
     return post_request_to_api(payload)
 
-if __name__ == "__main__":
+def main(language: str, document_path: str):
     try:
+        document_path = Path(document_path)
         config_path = Path("config/conf.json")
         config = load_json_config(config_path)
-        language = "it"
         class_config = config["classification_prompts"][language]
         metadata_config = config["metadata_prompts"][language]
-        document_path = Path("docs/02 - Dichiarazione di Conformità Lotto L 255SC selez.png")
 
         classification = process_image(document_path, class_config, "classification")
-        print(f"Classification: {classification}")
         metadata = process_image(document_path, metadata_config, classification)
-        print(f"Metadata: {metadata}")
+
+        return classification, metadata
 
     except Exception as e:
         print(f"An error occurred: {e}")
+
+
+if __name__ == "__main__":
+
+    with gr.Blocks() as demo:
+        language = gr.Dropdown(["it", "en"], label="Language")
+        document_path = gr.Image(type="filepath", label="Image")
+        classification = gr.Textbox(label="Classification")
+        metadata = gr.Textbox(label="Metadata")
+        query_btn = gr.Button("Ask")
+        query_btn.click(fn=main, inputs=[language, document_path], outputs=[classification, metadata])
+
+    demo.launch(share=True)
