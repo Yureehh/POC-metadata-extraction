@@ -9,7 +9,7 @@ from typing import Dict
 # Load environment variables
 load_dotenv()
 API_KEY = os.getenv("OPENAI_API_KEY")
-API_URL = os.getenv("API_URL", "https://api.openai.com/v1/chat/completions")
+API_URL = "https://api.openai.com/v1/chat/completions"
 MODEL = os.getenv("MODEL", "gpt-4-vision-preview")
 MAX_TOKENS = int(os.getenv("MAX_TOKENS", 1024))
 TEMPERATURE = int(os.getenv("TEMPERATURE", 0))
