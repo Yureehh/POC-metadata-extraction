@@ -6,25 +6,77 @@
         "addendum": "If the document has been classified as SCD or COA, recheck for elements of the other type. If elements of both are present classify it as 'SCD+COA'.",
         "output": "Return the type of the document as a string, one of SCD, COA, DDT, Other, SCD+COA. If you are going to return either 'SCD' or 'COA', recheck for elements of the other type. If elements of both are present classify it as 'SCD+COA'."
       }
+    },
+    "en": {
+      "classification": {
+        "prompt": "You are presented with an image of a document written in English. Determine its type based on the content and format. The types are SCD ('Statement Compliance Declaration'), COA ('Certificate of Analysis'), DDT ('Delivery Document'), 'Other' for non-matching documents or 'SCD+COA' for documents that contain elements of both SCD and COA. . Key indicators: 1. SCD: Look for 'Statement Compliance Declaration' or synonyms, typically containing extensive product information, often with company and product identifiers. 2. COA: Search for 'Certificate of Analysis' or similar terms, usually presented with detailed analysis data in a tabular format, including test results and specifications. 3. DDT: Identify 'Delivery Document' or related phrases, focusing on transport details like sender, receiver, and shipment information. If a document contains elements of both SCD and COA but doesn't fully align with the standard format of either, classify it as 'Other' and note the observed elements.",
+        "addendum": "If the document has been classified as SCD or COA, recheck for elements of the other type. If elements of both are present classify it as 'SCD+COA'.",
+        "output": "Return the type of the document as a string, one of SCD, COA, DDT, Other, SCD+COA. If you are going to return either 'SCD' or 'COA', recheck for elements of the other type. If elements of both are present classify it as 'SCD+COA'."
+      }
     }
   },
   "metadata_prompts": {
     "it": {
       "SCD+COA": {
-        "prompt": "You are presented with an image of a document written in Italian, classified as SCD. Extract metadata in JSON format: {'IdLotto': '[lot number]', 'IdLottoMadre': '[mother lot number]', 'CodiceMateriaPrima': '[raw material code]', 'DDT': '[transport document number]', 'DataDDT': '[transport document date]', 'DataConsegna': '[delivery date]', 'PresenzaConformità': '[True/False for compliance statement]'}.",
-        "addendum": "Return only True or False for boolean fields.",
-        "output": "Return only and exactly the json dictionary containing only extracted fields. Don't return anything else."
+        "prompt": "You are presented with an image of a document written in Italian, classified as SCD+COA. Extract metadata in JSON format: ",
+        "addendum": "Return only True or False for boolean fields. Return only the string with the metadata extracted and nothing else. If a metadata field is not present in the document, return 'N/A' for that field.",
+        "output": "Format the output return only and exactly the json dictionary containing only extracted metadata fields. Remove everything that's not strictly the metadata dictionary, also triple backticks and 'json' word."
       },
       "SCD": {
-        "prompt": "You are presented with an image of a document written in Italian, classified as SCD. Extract metadata in JSON format: {'IdLotto': '[lot number]', 'IdLottoMadre': '[mother lot number]', 'CodiceMateriaPrima': '[raw material code]', 'DDT': '[transport document number]', 'DataDDT': '[transport document date]', 'DataConsegna': '[delivery date]', 'PresenzaConformità': '[True/False for compliance statement]'}.",
-        "addendum": "Return only True or False for boolean fields.",
-        "output": "Return only and exactly the json object containing every field, remove everything that's not scrictly the metadata dictionary."
+        "prompt": "You are presented with an image of a document written in Italian, classified as SCD. Extract metadata in JSON format: ",
+        "addendum": "Return only True or False for boolean fields. Return only the string with the metadata extracted and nothing else. If a metadata field is not present in the document, return 'N/A' for that field.",
+        "output": "Format the output return only and exactly the json dictionary containing only extracted metadata fields. Remove everything that's not strictly the metadata dictionary, also triple backticks and 'json' word."
+      },
+      "COA": {
+        "prompt": "You are presented with an image of a document written in Italian, classified as COA. Extract metadata in JSON format: ",
+        "addendum": "Return only True or False for boolean fields. Return only the string with the metadata extracted and nothing else. If a metadata field is not present in the document, return 'N/A' for that field.",
+        "output": "Format the output return only and exactly the json dictionary containing only extracted metadata fields. Remove everything that's not strictly the metadata dictionary, also triple backticks and 'json' word."
+      },
+      "DDT": {
+        "prompt": "You are presented with an image of a document written in Italian, classified as DDT. Extract metadata in JSON format: ",
+        "addendum": "Return only True or False for boolean fields. Return only the string with the metadata extracted and nothing else. If a metadata field is not present in the document, return 'N/A' for that field.",
+        "output": "Format the output return only and exactly the json dictionary containing only extracted metadata fields. Remove everything that's not strictly the metadata dictionary, also triple backticks and 'json' word."
+      },
+      "metadata_extraction_string": {
+        "IdLotto": "[Numero lotto]",
+        "IdLottoMadre": "[Numero lotto madre]",
+        "CodiceMateriaPrima": "[Codice materia prima]",
+        "DDT": "[Numero DDT]",
+        "DataDDT": "[Data DDT]",
+        "DataConsegna": "[Data consegna]",
+        "PresenzaConformità": "[True/False per dichiarazione di conformità]"
       }
-    }
-  },
-  "refinement_prompts": {
-    "metadata": {
-      "prompt": "I want you to parse the output of a previous metadata extraction and to make sure the returned output is exactly a json object containing the metadata fields {'IdLotto': '[lot number]', 'IdLottoMadre': '[mother lot number]', 'CodiceMateriaPrima': '[raw material code]', 'DDT': '[transport document number]', 'DataDDT': '[transport document date]', 'DataConsegna': '[delivery date]', 'PresenzaConformità': '[True/False for compliance statement]'}."
+    },
+    "en": {
+      "SCD+COA": {
+        "prompt": "You are presented with an image of a document written in English, classified as SCD+COA. Extract metadata in JSON format: ",
+        "addendum": "Return only True or False for boolean fields. Return only the string with the metadata extracted and nothing else. If a metadata field is not present in the document, return 'N/A' for that field.",
+        "output": "Format the output return only and exactly the json dictionary containing only extracted metadata fields. Remove everything that's not strictly the metadata dictionary, also triple backticks and 'json' word."
+      },
+      "SCD": {
+        "prompt": "You are presented with an image of a document written in English, classified as SCD. Extract metadata in JSON format: ",
+        "addendum": "Return only True or False for boolean fields. Return only the string with the metadata extracted and nothing else. If a metadata field is not present in the document, return 'N/A' for that field.",
+        "output": "Format the output return only and exactly the json dictionary containing only extracted metadata fields. Remove everything that's not strictly the metadata dictionary, also triple backticks and 'json' word."
+      },
+      "COA": {
+        "prompt": "You are presented with an image of a document written in English, classified as COA. Extract metadata in JSON format: ",
+        "addendum": "Return only True or False for boolean fields. Return only the string with the metadata extracted and nothing else. If a metadata field is not present in the document, return 'N/A' for that field.",
+        "output": "Format the output return only and exactly the json dictionary containing only extracted metadata fields. Remove everything that's not strictly the metadata dictionary, also triple backticks and 'json' word."
+      },
+      "DDT": {
+        "prompt": "You are presented with an image of a document written in English, classified as DDT. Extract metadata in JSON format: ",
+        "addendum": "Return only True or False for boolean fields. Return only the string with the metadata extracted and nothing else. If a metadata field is not present in the document, return 'N/A' for that field.",
+        "output": "Format the output return only and exactly the json dictionary containing only extracted metadata fields. Remove everything that's not strictly the metadata dictionary, also triple backticks and 'json' word."
+      },
+      "metadata_extraction_string": {
+        "IdLotto": "[lot number]",
+        "IdLottoMadre": "[mother lot number]",
+        "CodiceMateriaPrima": "[raw material code]",
+        "DDT": "[transport document number]",
+        "DataDDT": "[transport document date]",
+        "DataConsegna": "[delivery date]",
+        "PresenzaConformità": "[True/False for compliance statement]"
+      }
     }
   }
 }
