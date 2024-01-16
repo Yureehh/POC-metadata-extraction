@@ -1,22 +1,11 @@
 {
-  "classification_prompts": {
-    "it": {
-      "classification": {
-        "prompt": "You are presented with an image of a document written in Italian. Determine its type based on the content and format. The types are SCD ('Dichiarazione di Conformità'), COA ('Certificato di Analisi'), DDT ('Documento di Trasporto'), 'Other' for non-matching documents or 'SCD+COA' for documents that contain elements of both SCD and COA. . Key indicators: 1. SCD: Look for 'Dichiarazione di Conformità' or synonyms, typically containing extensive product information, often with company and product identifiers. 2. COA: Search for 'Certificato di Analisi' or similar terms, usually presented with detailed analysis data in a tabular format, including test results and specifications. 3. DDT: Identify 'Documento di Trasporto' or related phrases, focusing on transport details like sender, receiver, and shipment information. If a document contains elements of both SCD and COA but doesn't fully align with the standard format of either, classify it as 'Other' and note the observed elements.",
-        "addendum": "If the document has been classified as SCD or COA, recheck for elements of the other type. If elements of both are present classify it as 'SCD+COA'.",
-        "output": "Return the type of the document as a string, one of SCD, COA, DDT, Other, SCD+COA. If you are going to return either 'SCD' or 'COA', recheck for elements of the other type. If elements of both are present classify it as 'SCD+COA'."
-      }
+  "it": {
+    "classification_prompts": {
+      "prompt": "You are presented with an image of a document written in Italian. Determine its type based on the content and format. The types are SCD ('Dichiarazione di Conformità'), COA ('Certificato di Analisi'), DDT ('Documento di Trasporto'), 'Other' for non-matching documents or 'SCD+COA' for documents that contain elements of both SCD and COA. . Key indicators: 1. SCD: Look for 'Dichiarazione di Conformità' or synonyms, typically containing extensive product information, often with company and product identifiers. 2. COA: Search for 'Certificato di Analisi' or similar terms, usually presented with detailed analysis data in a tabular format, including test results and specifications. 3. DDT: Identify 'Documento di Trasporto' or related phrases, focusing on transport details like sender, receiver, and shipment information. If a document contains elements of both SCD and COA but doesn't fully align with the standard format of either, classify it as 'Other' and note the observed elements.",
+      "addendum": "If the document has been classified as SCD or COA, recheck for elements of the other type. If elements of both are present classify it as 'SCD+COA'.",
+      "output": "Return the type of the document as a string, one of SCD, COA, DDT, Other, SCD+COA. If you are going to return either 'SCD' or 'COA', recheck for elements of the other type. If elements of both are present classify it as 'SCD+COA'."
     },
-    "en": {
-      "classification": {
-        "prompt": "You are presented with an image of a document written in English. Determine its type based on the content and format. The types are SCD ('Statement Compliance Declaration'), COA ('Certificate of Analysis'), DDT ('Delivery Document'), 'Other' for non-matching documents or 'SCD+COA' for documents that contain elements of both SCD and COA. . Key indicators: 1. SCD: Look for 'Statement Compliance Declaration' or synonyms, typically containing extensive product information, often with company and product identifiers. 2. COA: Search for 'Certificate of Analysis' or similar terms, usually presented with detailed analysis data in a tabular format, including test results and specifications. 3. DDT: Identify 'Delivery Document' or related phrases, focusing on transport details like sender, receiver, and shipment information. If a document contains elements of both SCD and COA but doesn't fully align with the standard format of either, classify it as 'Other' and note the observed elements.",
-        "addendum": "If the document has been classified as SCD or COA, recheck for elements of the other type. If elements of both are present classify it as 'SCD+COA'.",
-        "output": "Return the type of the document as a string, one of SCD, COA, DDT, Other, SCD+COA. If you are going to return either 'SCD' or 'COA', recheck for elements of the other type. If elements of both are present classify it as 'SCD+COA'."
-      }
-    }
-  },
-  "metadata_prompts": {
-    "it": {
+    "metadata_prompts": {
       "SCD+COA": {
         "prompt": "You are presented with an image of a document written in Italian, classified as SCD+COA. Extract metadata in JSON format: ",
         "addendum": "Return only True or False for boolean fields. Return only the string with the metadata extracted and nothing else. If a metadata field is not present in the document, return 'N/A' for that field.",
@@ -47,7 +36,19 @@
         "PresenzaConformita'": "[True/False per dichiarazione di conformità]"
       }
     },
-    "en": {
+    "tests_prompts": {
+      "prompt": "Analyze an Italian document, already identified as either SCD+COA or COA, containing chemical analysis results. Your task is to extract test data.",
+      "addendum": "Focus on extracting the test name (typically in the first column of a table or left part) and the corresponding result (usually in the last column of a table or right part). Include also those tests for which you don't find the certified result. For those tests having a semestral analytical frequency, return just 'Semestrale'. Ignore all other data.",
+      "output": "Present the extracted data in a clean JSON format, including only test names and results. Exclude all non-relevant content, including formatting markers like triple backticks."
+    }
+  },
+  "en": {
+    "classification_prompts": {
+      "prompt": "You are presented with an image of a document written in English. Determine its type based on the content and format. The types are SCD ('Statement Compliance Declaration'), COA ('Certificate of Analysis'), DDT ('Delivery Document'), 'Other' for non-matching documents or 'SCD+COA' for documents that contain elements of both SCD and COA. . Key indicators: 1. SCD: Look for 'Statement Compliance Declaration' or synonyms, typically containing extensive product information, often with company and product identifiers. 2. COA: Search for 'Certificate of Analysis' or similar terms, usually presented with detailed analysis data in a tabular format, including test results and specifications. 3. DDT: Identify 'Delivery Document' or related phrases, focusing on transport details like sender, receiver, and shipment information. If a document contains elements of both SCD and COA but doesn't fully align with the standard format of either, classify it as 'Other' and note the observed elements.",
+      "addendum": "If the document has been classified as SCD or COA, recheck for elements of the other type. If elements of both are present classify it as 'SCD+COA'.",
+      "output": "Return the type of the document as a string, one of SCD, COA, DDT, Other, SCD+COA. If you are going to return either 'SCD' or 'COA', recheck for elements of the other type. If elements of both are present classify it as 'SCD+COA'."
+    },
+    "metadata_prompts": {
       "SCD+COA": {
         "prompt": "You are presented with an image of a document written in English, classified as SCD+COA. Extract metadata in JSON format: ",
         "addendum": "Return only True or False for boolean fields. Return only the string with the metadata extracted and nothing else. If a metadata field is not present in the document, return 'N/A' for that field.",
@@ -77,22 +78,20 @@
         "DataConsegna": "[Delivery Date], usually found in bottom left corner of the document",
         "PresenzaConformita'": "[True/False for Statement of Compliance]"
       }
+    },
+    "tests_prompts": {
+      "prompt": "Examine an English document classified as SCD+COA or COA, detailing chemical analysis outcomes. Extract the relevant test information.",
+      "addendum": "Concentrate on the test name (usually found in the first column of a table or on the left) and its certified result (usually located in the last column of a table or on the right). Include also those tests for which you don't find the certified result. For those tests having a semestral analytical frequency, return just 'Semestral'. Ignore all other data.",
+      "output": "Deliver the extracted information in a streamlined JSON format, strictly containing test names and their results. Remove any extraneous content and formatting symbols."
     }
   },
-  "tests_prompts": {
-    "it": {
-      "tests": {
-        "prompt": "Analyze an Italian document, already identified as either SCD+COA or COA, containing chemical analysis results. Your task is to extract test data.",
-        "addendum": "Focus on extracting the test name (typically in the first column of a table or left part) and the corresponding result (usually in the last column of a table or right part). Include also those tests for which you don't find the certified result. For those tests having a semestral analytical frequency, return just 'Semestrale'. Ignore all other data.",
-        "output": "Present the extracted data in a clean JSON format, including only test names and results. Exclude all non-relevant content, including formatting markers like triple backticks."
-      }
-    },
-    "en": {
-      "test": {
-        "prompt": "Examine an English document classified as SCD+COA or COA, detailing chemical analysis outcomes. Extract the relevant test information.",
-        "addendum": "Concentrate on the test name (usually found in the first column of a table or on the left) and its certified result (usually located in the last column of a table or on the right). Include also those tests for which you don't find the certified result. For those tests having a semestral analytical frequency, return just 'Semestral'. Ignore all other data.",
-        "output": "Deliver the extracted information in a streamlined JSON format, strictly containing test names and their results. Remove any extraneous content and formatting symbols."
-      }
-    }
-  }
+  "metadata_to_extract": [
+    "IdLotto",
+    "IdLottoMadre",
+    "CodiceMateriaPrima",
+    "DDT",
+    "DataDDT",
+    "DataConsegna",
+    "PresenzaConformita'"
+  ]
 }
