@@ -23,7 +23,7 @@ METADATA_OPTIONS = [
     "DDT",
     "DataDDT",
     "DataConsegna",
-    "PresenzaConformità",
+    "PresenzaConformita'",
 ]
 
 # Verify if API key is available
@@ -147,6 +147,7 @@ def main(language: str, document_path: str, metadata_to_extract: str) -> str:
         config = load_json_config(config_path)
         class_config = config["classification_prompts"][language]
         metadata_config = config["metadata_prompts"][language]
+        tests_config = config["tests_prompts"][language]
 
         classification = process_image(document_path, class_config, "classification")
         metadata = process_image(
@@ -156,12 +157,17 @@ def main(language: str, document_path: str, metadata_to_extract: str) -> str:
             metadata_to_extract=metadata_to_extract,
         )
         parsed_metadata = process_metadata(metadata)
+        if classification in ["COA", "SCD+COA"]:
+            tests = process_image(document_path, tests_config, "tests")
+            tests = process_metadata(tests)
+        else:
+            tests = "No tests to extract"
 
-        return classification, parsed_metadata
+        return classification, parsed_metadata, tests
 
     except Exception as e:
         print(f"An error occurred: {e}")
-        return None, None
+        return None, None, None
 
 
 if __name__ == "__main__":
@@ -190,11 +196,16 @@ if __name__ == "__main__":
             metadata_extracted = gr.Textbox(
                 label="Metadata", info="The following metadata have been extracted:"
             )
+            test_extracted = gr.Textbox(
+                label="Tests",
+                info="The following metadata have been extracted:",
+                max_lines = 100
+            )
         query_btn = gr.Button("Ask")
         query_btn.click(
             fn=main,
             inputs=[language, document_path, metadata_to_extract],
-            outputs=[classification, metadata_extracted],
+            outputs=[classification, metadata_extracted, test_extracted],
         )
 
     demo.launch(share=True)

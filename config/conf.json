@@ -43,8 +43,8 @@
         "CodiceMateriaPrima": "[Codice materia prima]",
         "DDT": "[Numero DDT]",
         "DataDDT": "[Data DDT]",
-        "DataConsegna": "[Data consegna]",
-        "PresenzaConformità": "[True/False per dichiarazione di conformità]"
+        "DataConsegna": "[Data consegna], usually found in bottom left corner of the document",
+        "PresenzaConformita'": "[True/False per dichiarazione di conformità]"
       }
     },
     "en": {
@@ -69,13 +69,29 @@
         "output": "Format the output return only and exactly the json dictionary containing only extracted metadata fields. Remove everything that's not strictly the metadata dictionary, also triple backticks and 'json' word."
       },
       "metadata_extraction_string": {
-        "IdLotto": "[lot number]",
-        "IdLottoMadre": "[mother lot number]",
-        "CodiceMateriaPrima": "[raw material code]",
-        "DDT": "[transport document number]",
-        "DataDDT": "[transport document date]",
-        "DataConsegna": "[delivery date]",
-        "PresenzaConformità": "[True/False for compliance statement]"
+        "IdLotto": "[Lot Number]",
+        "IdLottoMadre": "[Mother Lot Number]",
+        "CodiceMateriaPrima": "[Raw Material Code]",
+        "DDT": "[DDT Number]",
+        "DataDDT": "[DDT Date]",
+        "DataConsegna": "[Delivery Date], usually found in bottom left corner of the document",
+        "PresenzaConformita'": "[True/False for Statement of Compliance]"
+      }
+    }
+  },
+  "tests_prompts": {
+    "it": {
+      "tests": {
+        "prompt": "Analyze an Italian document, already identified as either SCD+COA or COA, containing chemical analysis results. Your task is to extract test data.",
+        "addendum": "Focus on extracting the test name (typically in the first column of a table or left part) and the corresponding result (usually in the last column of a table or right part). Include also those tests for which you don't find the certified result. For those tests having a semestral analytical frequency, return just 'Semestrale'. Ignore all other data.",
+        "output": "Present the extracted data in a clean JSON format, including only test names and results. Exclude all non-relevant content, including formatting markers like triple backticks."
+      }
+    },
+    "en": {
+      "test": {
+        "prompt": "Examine an English document classified as SCD+COA or COA, detailing chemical analysis outcomes. Extract the relevant test information.",
+        "addendum": "Concentrate on the test name (usually found in the first column of a table or on the left) and its certified result (usually located in the last column of a table or on the right). Include also those tests for which you don't find the certified result. For those tests having a semestral analytical frequency, return just 'Semestral'. Ignore all other data.",
+        "output": "Deliver the extracted information in a streamlined JSON format, strictly containing test names and their results. Remove any extraneous content and formatting symbols."
       }
     }
   }
