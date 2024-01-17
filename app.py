@@ -13,7 +13,11 @@ config = load_json_configuration()
 
 
 def process_image(
-    image_path: Path, config_section: dict, model: str, metadata_fields: list = None, metadata_extraction_strings: dict = None
+    image_path: Path,
+    config_section: dict,
+    model: str,
+    metadata_fields: list = None,
+    metadata_extraction_strings: dict = None,
 ) -> str:
     """Process the image for a specified task using the OpenAI API."""
     image_base64 = encode_image_to_base64_string(image_path)
@@ -40,7 +44,8 @@ def process_image(
     )
     return send_request_to_openai_api(payload, env_vars["api_key"], env_vars["api_url"])
 
-#TODO: consider handling each task asynchronosly so that we can update the UI as each task completes
+
+# TODO: consider handling each task asynchronosly so that we can update the UI as each task completes
 def main(
     language: str, document_path: str, metadata_to_extract: list, selected_model: str
 ) -> tuple:
@@ -60,19 +65,18 @@ def main(
         metadata_config,
         selected_model,
         metadata_to_extract,
-        language_config["metadata_extraction_string"]
+        language_config["metadata_extraction_string"],
     )
 
     tests_config = language_config["tests_prompts"]
     tests = (
-        process_image(
-            document_path, tests_config, selected_model
-        )
+        process_image(document_path, tests_config, selected_model)
         if classification in ["COA", "SCD+COA"]
         else "No tests to extract"
     )
 
     return classification, metadata, tests
+
 
 if __name__ == "__main__":
     with gr.Blocks() as demo:

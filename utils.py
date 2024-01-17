@@ -1,14 +1,15 @@
 import base64
 import json
-from dotenv import load_dotenv
 import os
 from pathlib import Path
 from typing import Dict, Optional
 
 import requests
+from dotenv import load_dotenv
 
 # Load environment variables
 load_dotenv()
+
 
 def get_environment_settings():
     if api_key := os.getenv("OPENAI_API_KEY"):
