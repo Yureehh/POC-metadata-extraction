@@ -29,7 +29,7 @@
     },
     "tests_prompts": {
       "prompt": "Analyze an Italian document, already identified as either SCD+COA or COA, containing chemical analysis results. Your task is to extract test data.",
-      "addendum": "Focus on extracting the test name (typically in the first column of a table or left part) and the corresponding result (usually in the last column of a table or right part). Include also those tests for which you don't find the certified result. Ignore all other data.",
+      "addendum": "Focus on extracting the test name (typically in the first column of a table or left part) and the corresponding result (usually in the last column of a table or right part). Include also those tests for which you don't find the certified result but write '/' as value. Ignore all other data.",
       "output": "Present the extracted data in a clean JSON format, including only test names and results. Exclude all non-relevant content, including formatting markers like triple backticks."
     },
     "metadata_extraction_string": {
@@ -81,7 +81,7 @@
     },
     "tests_prompts": {
       "prompt": "Analyze an English document, already identified as either SCD+COA or COA, containing chemical analysis results. Your task is to extract test data.",
-      "addendum": "Focus on extracting the test name (typically in the first column of a table or left part) and the corresponding result (usually in the last column of a table or right part). Include also those tests for which you don't find the certified result. Ignore all other data.",
+      "addendum": "Focus on extracting the test name (typically in the first column of a table or left part) and the corresponding result (usually in the last column of a table or right part). Include also those tests for which you don't find the certified result but write '/' as value. Ignore all other data.",
       "output": "Present the extracted data in a clean JSON format, including only test names and results. Exclude all non-relevant content, including formatting markers like triple backticks."
     },
     "metadata_extraction_string": {
