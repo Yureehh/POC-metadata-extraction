@@ -13,24 +13,23 @@ config = load_json_configuration()
 
 
 def process_image(
-    image_path: Path, config_section: dict, task_key: str, model: str
+    image_path: Path, config_section: dict, model: str
 ) -> str:
     """Process the image for a specified task using the OpenAI API."""
     image_base64 = encode_image_to_base64_string(image_path)
     if image_base64 is None:
         return "Error: Image encoding failed"
-
     payload = create_chatbot_payload(
         image_base64,
         config_section.get("prompt", ""),
         config_section.get("addendum", ""),
         config_section.get("output", ""),
-        model,
+        env_vars["models"][model],
         env_vars["max_tokens"],
     )
     return send_request_to_openai_api(payload, env_vars["api_key"], env_vars["api_url"])
 
-
+#TODO: consider handling each task asynchronosly so that we can update the UI as each task completes
 def main(
     language: str, document_path: str, metadata_to_extract: list, selected_model: str
 ) -> tuple:
@@ -41,18 +40,16 @@ def main(
     classification = process_image(
         document_path,
         language_config["classification_prompts"],
-        "classification",
         selected_model,
     )
     metadata = process_image(
         document_path,
         language_config["metadata_prompts"][classification],
-        classification,
         selected_model,
     )
     tests = (
         process_image(
-            document_path, language_config["tests_prompts"], "tests", selected_model
+            document_path, language_config["tests_prompts"], selected_model
         )
         if classification in ["COA", "SCD+COA"]
         else "No tests to extract"
