@@ -13,15 +13,26 @@ config = load_json_configuration()
 
 
 def process_image(
-    image_path: Path, config_section: dict, model: str
+    image_path: Path, config_section: dict, model: str, metadata_fields: list = None, metadata_extraction_strings: dict = None
 ) -> str:
     """Process the image for a specified task using the OpenAI API."""
     image_base64 = encode_image_to_base64_string(image_path)
     if image_base64 is None:
         return "Error: Image encoding failed"
+
+    prompt = config_section.get("prompt", "")
+
+    # Add metadata extraction strings to the prompt if applicable
+    if metadata_fields and metadata_extraction_strings:
+        metadata_prompts = [
+            f"{field}: {metadata_extraction_strings.get(field, '')}"
+            for field in metadata_fields
+        ]
+        prompt += "\n" + "\n".join(metadata_prompts)
+
     payload = create_chatbot_payload(
         image_base64,
-        config_section.get("prompt", ""),
+        prompt,
         config_section.get("addendum", ""),
         config_section.get("output", ""),
         env_vars["models"][model],
@@ -42,14 +53,20 @@ def main(
         language_config["classification_prompts"],
         selected_model,
     )
+
+    metadata_config = language_config["metadata_prompts"].get(classification, {})
     metadata = process_image(
         document_path,
-        language_config["metadata_prompts"][classification],
+        metadata_config,
         selected_model,
+        metadata_to_extract,
+        language_config["metadata_extraction_string"]
     )
+
+    tests_config = language_config["tests_prompts"]
     tests = (
         process_image(
-            document_path, language_config["tests_prompts"], selected_model
+            document_path, tests_config, selected_model
         )
         if classification in ["COA", "SCD+COA"]
         else "No tests to extract"
@@ -57,14 +74,13 @@ def main(
 
     return classification, metadata, tests
 
-
 if __name__ == "__main__":
     with gr.Blocks() as demo:
         with gr.Row():
             document_input = gr.Image(type="filepath", label="Upload Document Image")
             model_selector = gr.Dropdown(list(env_vars["models"].keys()), label="Model")
             language_selector = gr.Dropdown(["it", "en"], label="Document Language")
-            metadata_to_extract = gr.CheckboxGroup(
+            metadata_to_extract_selector = gr.CheckboxGroup(
                 config["metadata_to_extract"], label="Metadata to Extract"
             )
 
@@ -79,7 +95,7 @@ if __name__ == "__main__":
             inputs=[
                 language_selector,
                 document_input,
-                metadata_to_extract,
+                metadata_to_extract_selector,
                 model_selector,
             ],
             outputs=[classification_display, metadata_display, tests_display],
