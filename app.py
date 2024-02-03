@@ -1,7 +1,6 @@
 from pathlib import Path
 
 import gradio as gr
-
 # Make sure all necessary functions are imported from utils
 from utils import (create_chatbot_payload, encode_image_to_base64_string,
                    get_environment_settings, load_json_configuration,
